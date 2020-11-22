@@ -1,0 +1,43 @@
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const cors = require('cors');
+const express = require('express');
+const helmet = require('helmet');
+const logger = require('morgan');
+const path = require('path');
+
+const todoRouter = require('./routes/todo');
+const dbConnection = require('./db/dbconnection');
+
+const app = express();
+
+const port = 5000
+// adding Helmet to enhance your API's security
+app.use(helmet());
+
+// using bodyParser to parse JSON bodies into JS objects
+app.use(bodyParser.json());
+
+// enabling CORS for all requests
+app.use(cors());
+
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+
+// parse application/json
+app.use(bodyParser.json())
+
+
+app.use('/todo', todoRouter);
+
+dbConnection.init
+    .then(app.listen(port))
+    .then(console.log(`Todo Backend app listening at http://localhost:${port}`))
+
+module.exports = app;
